@@ -1,0 +1,31 @@
+name: Browserstack
+
+on: [push, pull_request]
+jobs:
+  test-browsers-compatibility:
+    name: Browsers (older, on Browserstack)
+    runs-on: ubuntu-latest
+    env: # credentials need hardcoding for now since Github secrets aren't accessible on pull requests from forks
+      BROWSERSTACK_USERNAME: openpgpjs_PlY4Uq885CQ
+      BROWSERSTACK_ACCESS_KEY: VjgBVRMxNVBj7SjJFiau
+    
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build library
+        run: npm run build --if-present
+
+      - name: Wait for other Browserstack tests to finish
+        uses: softprops/turnstyle@v1
+        with:
+          poll-interval-seconds: 30
+          abort-after-seconds: 900
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run browserstack tests
+        run: npm run test-browserstack
+
