@@ -71,6 +71,10 @@
       "import": "./esm/crypto.js",
       "default": "./crypto.js"
     },
+    "./biginteger": {
+      "types": "./declarations/biginteger/index.d.ts",
+      "import": "./esm/biginteger/index.js"
+    },
     "./_assert": {
       "types": "./_assert.d.ts",
       "import": "./esm/_assert.js",
