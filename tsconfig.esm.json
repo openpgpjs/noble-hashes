@@ -3,13 +3,17 @@
     "outDir": "esm",
     "target": "es2020",
     "module": "es6",
+    "moduleResolution": "node",
+    "inlineSources": false,
     "baseUrl": ".",
+    "declaration": true,
+    "declarationDir": "declarations",
     "paths": {
       "@noble/hashes/crypto": ["src/crypto"]
     },
     "sourceMap": true,
     "strict": true,
-    "allowSyntheticDefaultImports": false,
+    "allowSyntheticDefaultImports": true, // needed for BN.js
     "allowUnreachableCode": false,
     "esModuleInterop": false,
     "noFallthroughCasesInSwitch": true,

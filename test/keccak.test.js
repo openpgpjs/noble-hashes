@@ -1,7 +1,7 @@
-const assert = require('assert');
-const crypto = require('crypto');
-const { should } = require('micro-should');
-const {
+import assert from 'assert';
+import crypto from 'crypto';
+import { should } from 'micro-should';
+import {
   sha3_224,
   sha3_256,
   sha3_384,
@@ -12,8 +12,8 @@ const {
   keccak_256,
   keccak_384,
   keccak_512,
-} = require('../sha3');
-const {
+} from '../esm/sha3.js';
+import {
   k12,
   m14,
   cshake128,
@@ -30,10 +30,14 @@ const {
   parallelhash128xof,
   parallelhash256,
   parallelhash256xof,
-  keccakprg: prg,
-} = require('../sha3-addons');
-const { pattern, times, EMPTY, TYPE_TEST, concatBytes, jsonGZ } = require('./utils.js');
-const fs = require('fs');
+  keccakprg as prg,
+} from '../esm/sha3-addons.js';
+import { pattern, times, EMPTY, TYPE_TEST, concatBytes, jsonGZ } from './utils.js';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 // Generated from test cases of KeccakPRG in XKCP
 const PRG_VECTORS = jsonGZ('vectors/sha3-addon-keccak-prg.json.gz');
 
@@ -844,5 +848,3 @@ should('Basic clone', () => {
     assert.deepStrictEqual(clone, o);
   }
 });
-
-if (require.main === module) should.run();
