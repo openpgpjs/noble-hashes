@@ -9,6 +9,9 @@
         "inlineSources": false,
         "noUnusedLocals": true,
         "baseUrl": ".",
+        "declaration": true,
+        "declarationDir": "declarations",
+        "allowSyntheticDefaultImports": true,
         "paths": {
             "@noble/hashes/crypto": [ "src/crypto" ]
         },

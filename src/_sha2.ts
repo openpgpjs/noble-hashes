@@ -1,13 +1,14 @@
 import assert from './_assert.js';
+import { BigInteger } from './biginteger/index.js';
 import { Hash, createView, Input, toBytes } from './utils.js';
 
-// Polyfill for Safari 14
-function setBigUint64(view: DataView, byteOffset: number, value: bigint, isLE: boolean): void {
-  if (typeof view.setBigUint64 === 'function') return view.setBigUint64(byteOffset, value, isLE);
-  const _32n = BigInt(32);
-  const _u32_max = BigInt(0xffffffff);
-  const wh = Number((value >> _32n) & _u32_max);
-  const wl = Number(value & _u32_max);
+// Polyfill for Safari <= 14
+function setBigUint64(view: DataView, byteOffset: number, value: BigInteger, isLE: boolean): void {
+  if (typeof view.setBigUint64 === 'function') return view.setBigUint64(byteOffset, BigInt(value.toString()), isLE);
+  const _32n = Object.freeze(BigInteger.new(32));
+  const _u32_max = Object.freeze(BigInteger.new(0xffffffff));
+  const wh = value.rightShift(_32n).bitwiseAnd(_u32_max).toNumber();
+  const wl = value.bitwiseAnd(_u32_max).toNumber();
   const h = isLE ? 4 : 0;
   const l = isLE ? 0 : 4;
   view.setUint32(byteOffset + h, wh, isLE);
@@ -86,7 +87,7 @@ export abstract class SHA2<T extends SHA2<T>> extends Hash<T> {
     // Note: sha512 requires length to be 128bit integer, but length in JS will overflow before that
     // You need to write around 2 exabytes (u64_max / 8 / (1024**6)) for this to happen.
     // So we just write lowest 64 bits of that value.
-    setBigUint64(view, blockLen - 8, BigInt(this.length * 8), isLE);
+    setBigUint64(view, blockLen - 8, BigInteger.new(this.length * 8), isLE);
     this.process(view, 0);
     const oview = createView(out);
     const len = this.outputLen;

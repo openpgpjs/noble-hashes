@@ -1,9 +1,13 @@
-const fs = require('fs');
-const zlib = require('zlib');
+import fs from 'fs';
+import zlib from 'zlib';
 const utf8ToBytes = (str) => new TextEncoder().encode(str);
 const hexToBytes = (str) => Uint8Array.from(Buffer.from(str, 'hex'));
 const truncate = (buf, length) => (length ? buf.slice(0, length) : buf);
 const bytesToHex = (buf) => Buffer.from(buf).toString('hex');
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const repeat = (buf, len) => {
   // too slow: Uint8Array.from({ length: len * buf.length }, (_, i) => buf[i % buf.length]);
@@ -108,8 +112,17 @@ const times = (byte, n) => new Uint8Array(n).fill(byte);
 const pattern = (toByte, len) => Uint8Array.from({ length: len }, (i, j) => j % (toByte + 1));
 
 const jsonGZ = (path) => JSON.parse(zlib.gunzipSync(fs.readFileSync(`${__dirname}/${path}`)));
+const EMPTY = {
+  str: '',
+  bytes: new Uint8Array([]),
+};
 
-module.exports = {
+const SPACE = {
+  str: ' ',
+  bytes: new Uint8Array([0x20]),
+};
+
+export {
   utf8ToBytes,
   hexToBytes,
   bytesToHex,
@@ -117,14 +130,8 @@ module.exports = {
   repeat,
   concatBytes,
   TYPE_TEST,
-  SPACE: {
-    str: ' ',
-    bytes: new Uint8Array([0x20]),
-  },
-  EMPTY: {
-    str: '',
-    bytes: new Uint8Array([]),
-  },
+  SPACE,
+  EMPTY,
   stats,
   times,
   pattern,

@@ -1,6 +1,7 @@
 import { SHA2 } from './_sha2.js';
 import u64 from './_u64.js';
 import { wrapConstructor } from './utils.js';
+import BigInteger from './biginteger/index.js';
 
 // Round contants (first 32 bits of the fractional parts of the cube roots of the first 80 primes 2..409):
 // prettier-ignore
@@ -25,7 +26,7 @@ const [SHA512_Kh, SHA512_Kl] = u64.split([
   '0x06f067aa72176fba', '0x0a637dc5a2c898a6', '0x113f9804bef90dae', '0x1b710b35131c471b',
   '0x28db77f523047d84', '0x32caab7b40c72493', '0x3c9ebe0a15c9bebc', '0x431d67c49c100d4c',
   '0x4cc5d4becb3e42b6', '0x597f299cfc657e2a', '0x5fcb6fab3ad6faec', '0x6c44198c4a475817'
-].map(n => BigInt(n)));
+].map(n => BigInteger.new(n)));
 
 // Temporary buffer, not used to store anything between runs
 const SHA512_W_H = new Uint32Array(80);

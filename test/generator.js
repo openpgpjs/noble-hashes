@@ -1,14 +1,10 @@
-const crypto = require('crypto');
-const assert = require('assert');
-const { should } = require('micro-should');
-const { sha256 } = require('../sha256');
-const { sha512 } = require('../sha512');
-const { blake2s } = require('../blake2s');
-const { blake2b } = require('../blake2b');
-const { sha3_256, sha3_512 } = require('../sha3');
-const { hkdf } = require('../hkdf');
-const { pbkdf2, pbkdf2Async } = require('../pbkdf2');
-const { concatBytes } = require('./utils');
+import crypto from 'crypto';
+import assert from 'assert';
+import { should } from 'micro-should';
+import { sha256 } from '../esm/sha256.js';
+import { sha512 } from '../esm/sha512.js';
+import { sha3_256, sha3_512 } from '../esm/sha3.js';
+import { concatBytes } from './utils.js';
 // Random data, by using hash we trying to achieve uniform distribution of each byte values
 let start = new Uint8Array([1, 2, 3, 4, 5]);
 let RANDOM = new Uint8Array();
@@ -220,7 +216,7 @@ function executeKDFTests(limit = true) {
   });
 }
 
-module.exports = {
+export {
   optional,
   integer,
   bytes,
