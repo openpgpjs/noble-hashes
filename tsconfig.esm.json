@@ -7,10 +7,6 @@
     "inlineSources": false,
     "baseUrl": ".",
     "declaration": true,
-    "declarationDir": "declarations",
-    "paths": {
-      "@noble/hashes/crypto": ["src/crypto"]
-    },
     "sourceMap": true,
     "strict": true,
     "allowSyntheticDefaultImports": true, // needed for BN.js
