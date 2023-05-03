@@ -1,6 +1,6 @@
-const assert = require('assert');
-const { should } = require('micro-should');
-const { optional, integer, gen } = require('./generator');
+import assert from 'assert';
+import { describe, should } from 'micro-should';
+import { optional, integer, gen } from './generator.js';
 
 // Here goes test for tests...
 should(`Test generator`, () => {
@@ -20,5 +20,3 @@ should(`Test generator`, () => {
     ]
   );
 });
-
-if (require.main === module) should.run();

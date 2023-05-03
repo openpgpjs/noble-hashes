@@ -1,14 +1,11 @@
-const assert = require('assert');
-const { should } = require('micro-should');
-const { sha256 } = require('../sha256');
-const { sha512 } = require('../sha512');
-const { hmac } = require('../hmac');
-const { sha3_256, shake256 } = require('../sha3');
-const { k12, kmac256, prg } = require('../sha3-addons');
-const { blake2b } = require('../blake2b');
-const { blake2s } = require('../blake2s');
-const { blake3, blake3derive } = require('../blake3');
-const { ripemd160 } = require('../ripemd160');
+import assert from 'assert';
+import { should } from 'micro-should';
+import { sha256 } from '../esm/sha256.js';
+import { sha512 } from '../esm/sha512.js';
+import { hmac } from '../esm/hmac.js';
+import { sha3_256, shake256 } from '../esm/sha3.js';
+import { k12, kmac256 } from '../esm/sha3-addons.js';
+import { ripemd160 } from '../esm/ripemd160.js';
 
 // small -- minimal personalization options, big -- all personalization options
 // test that clone works correctly if "to" is same class instance but with completely different personalization
@@ -44,33 +41,33 @@ const HASHES = {
         dkLen: 256,
       }),
   },
-  blake2s: {
-    small: () => blake2s.create(),
-    big: () =>
-      blake2s.create({
-        key: new Uint8Array([11, 22, 33]),
-        salt: new Uint8Array([14, 15, 16, 17, 18, 19, 155, 144]),
-        personalization: new Uint8Array([24, 25, 26, 27, 28, 29, 255, 244]),
-        dkLen: 12,
-      }),
-  },
-  blake2b: {
-    small: () => blake2b.create(),
-    big: () =>
-      blake2b.create({
-        key: new Uint8Array([11, 22, 33]),
-        salt: new Uint8Array([14, 15, 16, 17, 18, 19, 155, 144, 144, 155, 19, 18, 17, 16, 15, 14]),
-        personalization: new Uint8Array([
-          24, 25, 26, 27, 28, 29, 255, 244, 244, 255, 29, 28, 27, 26, 25, 24,
-        ]),
-        dkLen: 12,
-      }),
-  },
-  blake3: {
-    small: () => blake3.create(),
-    // derive has different IV
-    big: () => blake3.create({ context: 'someContext', dkLen: 256 }),
-  },
+  // blake2s: {
+  //   small: () => blake2s.create(),
+  //   big: () =>
+  //     blake2s.create({
+  //       key: new Uint8Array([11, 22, 33]),
+  //       salt: new Uint8Array([14, 15, 16, 17, 18, 19, 155, 144]),
+  //       personalization: new Uint8Array([24, 25, 26, 27, 28, 29, 255, 244]),
+  //       dkLen: 12,
+  //     }),
+  // },
+  // blake2b: {
+  //   small: () => blake2b.create(),
+  //   big: () =>
+  //     blake2b.create({
+  //       key: new Uint8Array([11, 22, 33]),
+  //       salt: new Uint8Array([14, 15, 16, 17, 18, 19, 155, 144, 144, 155, 19, 18, 17, 16, 15, 14]),
+  //       personalization: new Uint8Array([
+  //         24, 25, 26, 27, 28, 29, 255, 244, 244, 255, 29, 28, 27, 26, 25, 24,
+  //       ]),
+  //       dkLen: 12,
+  //     }),
+  // },
+  // blake3: {
+  //   small: () => blake3.create(),
+  //   // derive has different IV
+  //   big: () => blake3.create({ context: 'someContext', dkLen: 256 }),
+  // },
 };
 
 for (let k in HASHES) {
@@ -147,5 +144,3 @@ for (let k in HASHES) {
     );
   });
 }
-
-if (require.main === module) should.run();

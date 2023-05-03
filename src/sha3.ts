@@ -9,18 +9,19 @@ import {
   wrapXOFConstructorWithOpts,
   HashXOF,
 } from './utils.js';
+import { BigInteger } from './biginteger/index.js';
 
 // SHA3 (keccak) is based on a new design: basically, the internal state is bigger than output size.
 // It's called a sponge function.
 
 // Various per round constants calculations
-const [SHA3_PI, SHA3_ROTL, _SHA3_IOTA]: [number[], number[], bigint[]] = [[], [], []];
-const _0n = /* @__PURE__ */ BigInt(0);
-const _1n = /* @__PURE__ */ BigInt(1);
-const _2n = /* @__PURE__ */ BigInt(2);
-const _7n = /* @__PURE__ */ BigInt(7);
-const _256n = /* @__PURE__ */ BigInt(256);
-const _0x71n = /* @__PURE__ */ BigInt(0x71);
+const [SHA3_PI, SHA3_ROTL, _SHA3_IOTA]: [number[], number[], BigInteger[]] = [[], [], []];
+const _0n = /* @__PURE__ */ Object.freeze(BigInteger.new(0));
+const _1n = /* @__PURE__ */ Object.freeze(BigInteger.new(1));
+const _2n = /* @__PURE__ */ Object.freeze(BigInteger.new(2));
+const _7n = /* @__PURE__ */ Object.freeze(BigInteger.new(7));
+const _256n = /* @__PURE__ */ Object.freeze(BigInteger.new(256));
+const _0x71n = /* @__PURE__ */ Object.freeze(BigInteger.new(0x71));
 for (let round = 0, R = _1n, x = 1, y = 0; round < 24; round++) {
   // Pi
   [x, y] = [y, (2 * x + 3 * y) % 5];
@@ -28,10 +29,10 @@ for (let round = 0, R = _1n, x = 1, y = 0; round < 24; round++) {
   // Rotational
   SHA3_ROTL.push((((round + 1) * (round + 2)) / 2) % 64);
   // Iota
-  let t = _0n;
+  const t = _0n.clone();
   for (let j = 0; j < 7; j++) {
-    R = ((R << _1n) ^ ((R >> _7n) * _0x71n)) % _256n;
-    if (R & _2n) t ^= _1n << ((_1n << /* @__PURE__ */ BigInt(j)) - _1n);
+    R = R.leftShift(_1n).ixor( R.rightShift(_7n).imul(_0x71n) ).imod(_256n)
+    if (!R.bitwiseAnd(_2n).isZero()) t.ixor( _1n.leftShift( _1n.leftShift(/* @__PURE__ */ BigInteger.new(j)).idec() ));
   }
   _SHA3_IOTA.push(t);
 }
@@ -60,6 +61,7 @@ export function keccakP(s: Uint32Array, rounds: number = 24) {
         s[x + y + 1] ^= Tl;
       }
     }
+
     // Rho (ρ) and Pi (π)
     let curH = s[2];
     let curL = s[3];
@@ -73,11 +75,13 @@ export function keccakP(s: Uint32Array, rounds: number = 24) {
       s[PI] = Th;
       s[PI + 1] = Tl;
     }
+
     // Chi (χ)
     for (let y = 0; y < 50; y += 10) {
       for (let x = 0; x < 10; x++) B[x] = s[y + x];
       for (let x = 0; x < 10; x++) s[y + x] ^= ~B[(x + 2) % 10] & B[(x + 4) % 10];
     }
+
     // Iota (ι)
     s[0] ^= SHA3_IOTA_H[round];
     s[1] ^= SHA3_IOTA_L[round];

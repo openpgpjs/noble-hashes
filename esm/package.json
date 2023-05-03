@@ -1,6 +1,6 @@
 {
   "type": "module",
-  "sideEffects": false,
+  "sideEffects": ["./biginteger/index.js"],
   "browser": {
     "node:crypto": false
   },
