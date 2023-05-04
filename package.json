@@ -61,15 +61,6 @@
     "node": ">= 16"
   },
   "exports": {
-    "./crypto": {
-      "types": "./crypto.d.ts",
-      "node": {
-        "import": "./esm/cryptoNode.js",
-        "default": "./cryptoNode.js"
-      },
-      "import": "./esm/crypto.js",
-      "default": "./crypto.js"
-    },
     "./_assert": {
       "types": "./_assert.d.ts",
       "import": "./esm/_assert.js",
