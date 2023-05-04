@@ -2,9 +2,7 @@
   "type": "module",
   "sideEffects": ["./biginteger/index.js"],
   "browser": {
-    "node:crypto": false
-  },
-  "node": {
-    "./crypto": "./esm/cryptoNode.js"
+    "node:crypto": false,
+    "./crypto.js": "./cryptoBrowser.js"
   }
 }
