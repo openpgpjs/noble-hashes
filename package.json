@@ -32,10 +32,6 @@
     "url": "https://github.com/paulmillr/noble-hashes.git"
   },
   "license": "MIT",
-  "browser": {
-    "node:crypto": false,
-    "./crypto": "./crypto.js"
-  },
   "dependencies": {
     "@types/bn.js": "^4.11.6",
     "bn.js": "^4.11.8"
@@ -62,15 +58,6 @@
     "node": ">= 16"
   },
   "exports": {
-    "./crypto": {
-      "types": "./crypto.d.ts",
-      "node": {
-        "import": "./esm/cryptoNode.js",
-        "default": "./cryptoNode.js"
-      },
-      "import": "./esm/crypto.js",
-      "default": "./crypto.js"
-    },
     "./biginteger": {
       "types": "./declarations/biginteger/index.d.ts",
       "import": "./esm/biginteger/index.js"
