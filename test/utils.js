@@ -109,7 +109,7 @@ function stats(list) {
 }
 
 const times = (byte, n) => new Uint8Array(n).fill(byte);
-const pattern = (toByte, len) => Uint8Array.from({ length: len }, (i, j) => j % (toByte + 1));
+const pattern = (toByte, len) => new Uint8Array(new Array(len).fill(0).map((i, j) => j % (toByte + 1)));
 
 const jsonGZ = (path) => JSON.parse(zlib.gunzipSync(fs.readFileSync(`${__dirname}/${path}`)));
 const EMPTY = {
