@@ -59,6 +59,9 @@
     "./biginteger": {
       "import": "./esm/biginteger/index.js"
     },
+    "./esm/biginteger/*": {
+      "import": "./esm/biginteger/*.js"
+    },
     "./ripemd160": {
       "import": "./esm/ripemd160.js"
     },
