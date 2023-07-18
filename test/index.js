@@ -1,5 +1,6 @@
 import { should } from 'micro-should';
 // // Tests generated from rust
+import './hmac.test.js';
 import './clone.test.js';
 import './u64.test.js';
 import './utils.test.js';

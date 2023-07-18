@@ -62,6 +62,9 @@
     "./esm/biginteger/*": {
       "import": "./esm/biginteger/*.js"
     },
+    "./hmac": {
+      "import": "./esm/hmac.js"
+    },
     "./ripemd160": {
       "import": "./esm/ripemd160.js"
     },
