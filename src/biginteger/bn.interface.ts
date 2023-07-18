@@ -27,8 +27,11 @@ export default class BNBigInteger extends AbstractBigInteger {
       throw new Error('Invalid BigInteger input');
     }
 
-    const base = ((typeof n === 'string' || n instanceof String) && n.startsWith('0x')) ? 16 : 10;
-    this.value = new BN(n, base); // Note: if n is a BN, this just returns the reference, no cloning
+    const isHex = (typeof n === 'string' || n instanceof String) && n.startsWith('0x');
+
+    this.value = isHex ?
+      new BN(n.substring(2), 16) : // need to strip the leading '0x'
+      new BN(n); // Note: if n is a BN, this just returns the reference, no cloning
   }
 
   clone() {
@@ -172,6 +175,24 @@ export default class BNBigInteger extends AbstractBigInteger {
   }
 
   /**
+   * BigInteger division, in place
+   * @param {BigInteger} n - Value to divide
+   */
+    idiv(n: BNBigInteger) {
+      this.value = this.value.div(n.value);
+      return this;
+    }
+  
+    /**
+     * BigInteger division
+     * @param {BigInteger} n - Value to divide
+     * @returns {BigInteger} this divded by n.
+     */
+    div(n: BNBigInteger) {
+      return this.clone().idiv(n);
+    }
+
+  /**
    * Compute greatest common divisor between this and n
    * @param {BigInteger} n - Operand
    * @returns {BigInteger} gcd
@@ -184,7 +205,10 @@ export default class BNBigInteger extends AbstractBigInteger {
    * Shift this to the left by x, in place
    * @param {BigInteger} x - Shift value
    */
-  ileftShift(x: BNBigInteger) {
+  ileftShift(x: BNBigInteger): this {
+    if (x.isNegative()) {
+      return this.irightShift(x.negate());
+    }
     this.value.ishln(x.value.toNumber());
     return this;
   }
@@ -202,7 +226,10 @@ export default class BNBigInteger extends AbstractBigInteger {
    * Shift this to the right by x, in place
    * @param {BigInteger} x - Shift value
    */
-  irightShift(x: BNBigInteger) {
+  irightShift(x: BNBigInteger): this {
+    if (x.isNegative()) {
+      return this.ileftShift(x.negate());
+    }
     this.value.ishrn(x.value.toNumber());
     return this;
   }
@@ -219,6 +246,10 @@ export default class BNBigInteger extends AbstractBigInteger {
   ixor(x: BNBigInteger) {
     this.value.ixor(x.value);
     return this;
+  }
+
+  xor(x: BNBigInteger) {
+    return this.clone().ixor(x);
   }
 
   ibitwiseAnd(x: BNBigInteger) {
@@ -299,6 +330,12 @@ export default class BNBigInteger extends AbstractBigInteger {
   abs() {
     const res = this.clone();
     res.value = res.value.abs();
+    return res;
+  }
+
+  negate() {
+    const res = this.clone();
+    res.value.ineg();
     return res;
   }
 

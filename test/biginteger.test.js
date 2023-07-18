@@ -7,6 +7,7 @@ import BigInteger from '../esm/biginteger/index.js';
 import BN  from 'bn.js';
 import crypto from 'crypto';
 
+
 async function getRandomBN(min, max) {
   if (max.cmp(min) <= 0) {
     throw new Error('Illegal parameter value: max <= min');
@@ -22,6 +23,8 @@ async function getRandomBN(min, max) {
 describe('BigInteger', function() {
   const existingImplementation = BigInteger.Implementation;
 
+  // micro-should does not implement `before/after` and need to use
+  // `describe/should` to ensure the block are executed in order.
   describe('Native implementation', function() {
     bigIntegerTests(NativeBigInteger);
   });
@@ -30,22 +33,38 @@ describe('BigInteger', function() {
     bigIntegerTests(BNBigInteger);
   });
 
-  BigInteger.setImplementation(existingImplementation, true)
+  should('restore original implementation', function () {
+    BigInteger.setImplementation(existingImplementation, true);
+    const n = BigInteger.new(1);
+    ok(n instanceof existingImplementation);
+  });
 })
 
 function bigIntegerTests (implementation) {
-  BigInteger.setImplementation(implementation, true);
+  should('set the given implementation', function() {
+    // used for all the following tests
+    BigInteger.setImplementation(implementation, true);
+    const n = BigInteger.new(1);
+    ok(n instanceof implementation);
+  });
 
   should('constructor throws on undefined input', function() {
     throws(() => BigInteger.new(), /Invalid BigInteger input/);
   });
 
 
-  should('constructor supports strings', function() {
+  should('constructor supports strings (base 10)', function() {
     const input = '417653931840771530406225971293556769925351769207235721650257629558293828796031115397206059067934284452829611906818956352854418342467914729341523414945427019410284762464062112274326172407819051167058569790660930309496043254270888417520676082271432948852231332576271876251597199882908964994070268531832274431027';
     const got = BigInteger.new(input);
     const expected = new BN(input);
     strictEqual(got.toString(), expected.toString());
+  });
+
+  should('constructor supports strings (hex)', function() {
+    const input = '0x90af56259a4b6bfbc4337980d5d75fbe3c074630368ff3804d33028e5dbfa77';
+    const got = BigInteger.new(input);
+    const expected = '4090177687267471719164802180371655790974410769055056530206928641275872410231';
+    strictEqual(got.toString(), expected);
   });
 
   should('constructor supports Uint8Arrays', function() {
@@ -115,18 +134,37 @@ function bigIntegerTests (implementation) {
   should('binary operators are consistent', function() {
     const a = BigInteger.new(12);
     const b = BigInteger.new(34);
-    const ops = ['add', 'sub', 'mul', 'mod', 'leftShift', 'rightShift'];
+    const ops = ['add', 'sub', 'mul', 'div', 'mod', 'leftShift', 'rightShift'];
     ops.forEach(op => {
       const iop = `i${op}`;
       ok(a[op](b).equal(a[iop](b)));
     });
   });
 
+  should('support shifting by negative values', function() {
+    const four = BigInteger.new(4);
+    const two = BigInteger.new(2);
+    const eight = BigInteger.new(8);
+    const minusOne = BigInteger.new(-1);
+
+    ok(four.rightShift(minusOne).equal(eight));
+    ok(four.leftShift(minusOne).equal(two));
+  });
+
   should('unary operators are consistent', function() {
     const a = BigInteger.new(12);
+    const zero = BigInteger.new(0);
     const one = BigInteger.new(1);
     ok(a.sub(one).equal(a.dec()));
     ok(a.add(one).equal(a.inc()));
+
+    ok(a.negate().isNegative() === true);
+    ok(a.negate().abs().isNegative() === false);
+
+    ok(a.negate().equal( zero.sub(a) ));
+    ok(a.negate().negate().equal(a));
+    ok(a.negate().abs().equal(a));
+    ok(a.abs().equal(a));
   });
 
   should('modExp is correct (large values)', function() {
@@ -160,6 +198,9 @@ function bigIntegerTests (implementation) {
     const n = BigInteger.new(moduloBN.toString());
     const expected = baseBN.invm(moduloBN);
     strictEqual(a.modInv(n).toString(), expected.toString());
+    // test negative operand
+    const expectedNegated = baseBN.neg().invm(moduloBN);
+    strictEqual(a.negate().modInv(n).toString(), expectedNegated.toString());
     throws(() => a.mul(n).modInv(n), /Inverse does not exist/);
   });
 

@@ -111,6 +111,19 @@ abstract class BigInteger {
    * @throws {Error} if the inverse does not exist
    */
   abstract modInv(n: BigInteger): BigInteger;
+  
+  /**
+   * BigInteger division, in place
+   * @param {BigInteger} n - Value to divide
+   */
+  abstract idiv(n: BigInteger): BigInteger;
+  
+  /**
+   * BigInteger division
+   * @param {BigInteger} n - Value to divide
+   * @returns {BigInteger} this divded by n.
+   */
+  abstract div(n: BigInteger): BigInteger;
 
   /**
    * Compute greatest common divisor between this and n
@@ -192,6 +205,8 @@ abstract class BigInteger {
 
   abstract abs(): BigInteger;
 
+  abstract negate(): BigInteger;
+
   /**
    * Get this value as a string
    * @returns {String} this value.
@@ -213,6 +228,7 @@ abstract class BigInteger {
   abstract getBit(i: number): number;
 
   abstract ixor(x: BigInteger): this;
+  abstract xor(x: BigInteger): BigInteger;
   abstract ibitwiseAnd(x: BigInteger): this;
   abstract bitwiseAnd(x: BigInteger): BigInteger;
   abstract ibitwiseOr(x: BigInteger): BigInteger;
@@ -235,7 +251,7 @@ abstract class BigInteger {
    * @param {Number} length - Of output array
    * @returns {Uint8Array}
    */
-  abstract toUint8Array(endian: string, length: number): Uint8Array;
+  abstract toUint8Array(endian?: string, length?: number): Uint8Array;
 }
 
 export { BigInteger, ConcreteBigInteger, BigInteger as default };

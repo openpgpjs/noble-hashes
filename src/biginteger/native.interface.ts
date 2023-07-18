@@ -195,8 +195,27 @@ export default class NativeBigInteger extends AbstractBigInteger {
   }
 
   /**
+   * BigInteger division, in place
+   * @param {BigInteger} n - Value to divide
+   */
+  idiv(n: NativeBigInteger) {
+    this.value /= n.value;
+    return this;
+  }
+
+  /**
+   * BigInteger division
+   * @param {BigInteger} n - Value to divide
+   * @returns {BigInteger} this divded by n.
+   */
+  div(n: NativeBigInteger) {
+    return this.clone().idiv(n);
+  }
+
+  /**
    * Extended Eucleadian algorithm (http://anh.cs.luc.edu/331/notes/xgcd.pdf)
-   * Given a = this and b, compute (x, y) such that ax + by = gdc(a, b)
+   * Given a = this and b, compute (x, y) such that ax + by = gdc(a, b).
+   * Negative numbers are also supported.
    * @param {BigInteger} b - Second operand
    * @returns {{ gcd, x, y: BigInteger }}
    */
@@ -206,8 +225,13 @@ export default class NativeBigInteger extends AbstractBigInteger {
     let xPrev = BigInt(1);
     let yPrev = BigInt(0);
 
-    let a = this.value;
-    let b = bInput.value;
+    // Deal with negative numbers: run algo over absolute values,
+    // and "move" the sign to the returned x and/or y.
+    // See https://math.stackexchange.com/questions/37806/extended-euclidean-algorithm-with-negative-numbers
+    let a = this.abs().value;
+    let b = bInput.abs().value;
+    const aNegated = this.isNegative();
+    const bNegated = bInput.isNegative();
 
     while (b !== BigInt(0)) {
       const q = a / b;
@@ -225,8 +249,8 @@ export default class NativeBigInteger extends AbstractBigInteger {
     }
 
     return {
-      x: new NativeBigInteger(xPrev),
-      y: new NativeBigInteger(yPrev),
+      x: new NativeBigInteger(aNegated? -xPrev : xPrev),
+      y: new NativeBigInteger(bNegated ? -yPrev : yPrev),
       gcd: new NativeBigInteger(a),
     };
   }
@@ -286,6 +310,10 @@ export default class NativeBigInteger extends AbstractBigInteger {
   ixor(x: NativeBigInteger) {
     this.value ^= x.value;
     return this;
+  }
+
+  xor(x: NativeBigInteger) {
+    return this.clone().ixor(x);
   }
 
   ibitwiseAnd(x: NativeBigInteger) {
@@ -368,6 +396,12 @@ export default class NativeBigInteger extends AbstractBigInteger {
     if (this.isNegative()) {
       res.value = -res.value;
     }
+    return res;
+  }
+
+  negate() {
+    const res = this.clone();
+    res.value = -res.value;
     return res;
   }
 
